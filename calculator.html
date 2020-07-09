@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+    </head>
+    <style>
+        .center{
+            margin: auto;
+            width: 50%;
+        }
+        #calcbody{
+            border: 3px solid black;
+        }
+        .grid-container{
+            display: grid;
+            grid-template-columns: auto auto auto auto;
+            grid-template-rows: auto auto auto auto;
+            grid-gap: 10px;
+        }
+        .grid-items{
+            
+            margin: 50px;
+            text-align: center;
+            font-size: large;
+
+
+        }
+        #results{
+            width: 75%;
+            margin: auto;
+            text-align: right;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            border: 1px solid black;
+            padding: 10px;
+            font-size:xx-large;
+            min-height: 40px;
+            
+           
+        }
+        #clear{
+            grid-column: 1/5;
+            padding: auto;
+            margin: 10px;
+            
+        }
+    </style>
+    <body>
+        <div id = "calcbody" class="center">
+            <div id = "results"></div>
+            <div id = "numpad" class="grid-container">
+                <button id = "num 7" class = "grid-items number">7</button>
+                <button id = "num 8" class = "grid-items number">8</button>
+                <button id = "num 9" class = "grid-items number">9</button>
+
+                <button id = "plus" class = "grid-items non-number">+</button>
+
+                <button id = "num 4" class = "grid-items number">4</button>
+                <button id = "num 5" class = "grid-items number">5</button>
+                <button id = "num 6" class = "grid-items number">6</button>
+
+                <button id = "minus"class = "grid-items non-number">-</button>
+
+                <button id = "num 1" class = "grid-items number">1</button>
+                <button id = "num 2" class = "grid-items number">2</button>
+                <button id = "num 3" class = "grid-items number">3</button>
+                
+                <button id = "multiply" class="grid-items non-number">*</button>
+
+                <button id = "num 0" class = "grid-items number">0</button>
+                <button id = "decimal" class="grid-items number">.</button>
+                <button id = "equals"class = "grid-items non-number">=</button>
+                <button id = "divide" class= "grid-items non-number">/</button>
+                <button id = "clear">clear</button>
+
+            </div>
+        </div>
+        
+        <script>
+            let eqArray = [];
+            let displayValue = "";
+            function updateResults(){
+                displayBox = document.querySelector("#results"); 
+                displayBox.textContent = displayValue;
+            }
+            const numbers = document.querySelectorAll(".number"); 
+            numbers.forEach((number) => {
+                number.addEventListener('click',function (e){
+                    populate(e.target.textContent);
+                })
+                
+            });
+
+            /*const decimalBtn = document.querySelector("#decimal");
+            decimalBtn.addEventListener('click', () => {
+                if(!displayValue.includes("."))
+                {
+                    displayValue += ".";
+                    updateResults();
+                }
+            })*/
+            const clearBtn = document.querySelector("#clear");
+            clearBtn.addEventListener('click',() =>{
+                    displayValue = "";
+                    updateResults();
+            });
+
+            const nonNumbers = document.querySelectorAll(".non-number");
+            nonNumbers.forEach((nonNumbers) => {
+                nonNumbers.addEventListener('click',function(e){
+                    buildEquation(e.target.textContent);
+                })
+            })
+
+            function buildEquation(sign){
+                eqArray.push(displayValue);
+                if(sign != "="){
+                    eqArray.push(sign);
+                    displayValue = sign;
+                    updateResults();
+                }
+                else{
+                    operate();
+                }
+
+            }
+            function populate(value){
+                    if(isNaN(displayValue))
+                    {
+                        displayValue = "";
+                    }
+                    if(value == ".")
+                    {
+                        if(!displayValue.includes("."))
+                        {
+                            displayValue += ".";
+                            updateResults();
+                            return;
+                        }
+                        return; 
+                    }
+                    displayValue += value;
+                    updateResults();
+                    return;
+            }
+            function add (a,b) {
+	        let sum = a + b;
+	        return sum;	
+            }
+
+            function subtract (a, b) {
+	        let result = a - b;
+	        return result;
+            }
+
+            function multiply (a,b) {
+	        /*arrayProduct = arr.reduce((total,ele) => {
+		    return total * ele;
+	        }, 1);
+	
+            return arrayProduct; */
+                product = a*b;
+                return product;
+            }
+
+            function divide(dividend, divisor){
+                let result = dividend / divisor;
+                return result;
+            }
+
+            function operate(){
+                /*switch(operator){
+                    case "+":
+                        return add(num1,num2);
+                        break;
+                    
+                    case "-":
+                        return subtract(num1,num2);
+                        break;
+                    case "*":
+                        return multiply(num1,num2);
+                        break;
+                    case "/":
+                        return divide(num1,num2);
+                        break;
+                }*/
+
+                while(eqArray.includes("*")||eqArray.includes("/"))
+                {
+                    while(eqArray.indexOf("*") != -1)
+
+                    {
+                        idx = eqArray.indexOf("*");
+                        num1 = parseFloat(eqArray[idx-1]);
+                        num2 = parseFloat(eqArray[idx+1]);
+                        product = multiply(num1,num2);
+
+                        eqArray[idx] = product;
+                        eqArray.splice((idx+1),1);
+                        eqArray.splice((idx-1),1);
+                       
+                    }
+                    
+                    while(eqArray.indexOf("/") != -1)
+                    {
+                        idx = eqArray.indexOf("/");
+                        num1 = parseFloat(eqArray[idx-1]);
+                        num2 = parseFloat(eqArray[idx+1]);
+                        quotient = divide(num1,num2);
+
+                        eqArray[idx] = quotient;
+                        eqArray.splice((idx+1),1);
+                        eqArray.splice((idx-1),1);
+                        
+                    }
+                }
+                while(eqArray.includes("+")||eqArray.includes("-"))
+                {
+                    while(eqArray.indexOf("+")!= -1)
+                    {
+                        idx = eqArray.indexOf("+");
+                        num1 = parseFloat(eqArray[idx-1]);
+                        num2 = parseFloat(eqArray[idx+1]);
+                        sum = add(num1,num2);
+
+                        eqArray[idx] = sum;
+                        eqArray.splice((idx+1),1);
+                        eqArray.splice((idx-1),1);
+                        
+                    }
+
+                    while(eqArray.indexOf("-") != -1)
+                    {
+                        idx = eqArray.indexOf("-");
+                        num1 = parseFloat(eqArray[idx-1]);
+                        num2 = parseFloat(eqArray[idx+1]);
+                        difference = subtract(num1,num2);
+
+                        eqArray[idx] = difference;
+                        eqArray.splice((idx+1),1);
+                        eqArray.splice((idx-1),1);
+                        
+                    }
+                }
+                
+                
+                displayValue = eqArray[0];
+                updateResults();
+                eqArray=[];
+            }
+        
+        </script>
+    </body>
+</html>
